@@ -2,7 +2,7 @@
   "domain": "espn",
   "name": "espn",
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/pynubank",
+  "documentation": "https://www.home-assistant.io/integrations/espn",
   "requirements": [],
   "ssdp": [],
   "zeroconf": [],

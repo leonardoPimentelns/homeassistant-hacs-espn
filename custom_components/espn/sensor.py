@@ -77,7 +77,9 @@ class EspnSensor(entity.Entity):
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20220802-20220807")
+        date1 = (datetime.now()- timedelta(days=2)).strftime('%Y%m%d') 
+        date2 = (datetime.now()+ timedelta(days=5)).strftime('%Y%m%d')
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates="+date1+"-"+date2+"")
         self.result = json.loads(request.content)
         self.leagues = self.result
         self.event= []

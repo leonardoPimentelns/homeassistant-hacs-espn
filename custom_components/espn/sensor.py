@@ -41,7 +41,7 @@ def setup_platform(
 ):
     """Set up the Espn sensors."""
     get_dados = espn()
-    get_matches_live_event = espn.get_matches_live_event()
+    get_matches_live_event = get_dados.get_matches_live_event()
     get_matches = get_dados.get_matches()
    
 
@@ -70,7 +70,7 @@ class EspnSensor(entity.Entity):
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
         
-        self.get_matches_live_event = get_matches_live_event
+        self.get_matches_live_event = self.get_matches_live_event
         self.matches = self.get_matches
 
 

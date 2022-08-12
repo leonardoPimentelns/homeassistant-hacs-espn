@@ -5,7 +5,7 @@ from datetime import timedelta,datetime
 import logging
 import voluptuous
 import json
-import requests
+from requests.structures import CaseInsensitiveDict
 import pytz
 from homeassistant import const
 from homeassistant.helpers import entity

@@ -6,6 +6,7 @@ import logging
 import voluptuous
 import json
 from requests.structures import CaseInsensitiveDict
+import requests
 import pytz
 from homeassistant import const
 from homeassistant.helpers import entity

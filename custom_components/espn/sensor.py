@@ -120,7 +120,7 @@ class EspnSensor(entity.Entity):
 
             leagues['date'] = new_date
             leagues.pop('links')
-            event.append(leagues)
+            self.event.append(leagues)
 
             for competitions  in leagues['competitions']:
                 competitions.pop('situation')

@@ -52,6 +52,7 @@ class EspnSensor(entity.Entity):
         self._attr_name = "Espn_premier_league"
         self.event = None
         self.logo = None
+        self.matches = None
         self._matches_live_event= []
 
 
@@ -74,7 +75,6 @@ class EspnSensor(entity.Entity):
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
-        live_event= {}
 
         url = "https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/633fde36-78f6-4183-a304-99647a13eb51/pageSize/15/page/1"
 
@@ -108,20 +108,19 @@ class EspnSensor(entity.Entity):
         date1 = (datetime.now()- timedelta(days=2)).strftime('%Y%m%d') 
         date2 = (datetime.now()+ timedelta(days=5)).strftime('%Y%m%d')
         request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates="+date1+"-"+date2+"")
-        self.result = json.loads(request.content)
-        self.leagues = self.result
-        self.event= []
-        self.logo = self.leagues['leagues'][0]['logos'][0]['href']
+        result = json.loads(request.content)
+        event= []
+        self.logo = result['leagues'][0]['logos'][0]['href']
 
 
-        for leagues in self.leagues['events'][0:10]:
+        for leagues in result['events'][0:10]:
             date_z =leagues['date'].replace('Z', '+00:00')
             date = datetime.fromisoformat(date_z)
             new_date = date.astimezone(pytz.timezone('America/Sao_Paulo')).strftime('%a-%m-%d %H:%M')
 
             leagues['date'] = new_date
             leagues.pop('links')
-            self.event.append(leagues)
+            event.append(leagues)
 
             for competitions  in leagues['competitions']:
                 competitions.pop('situation')

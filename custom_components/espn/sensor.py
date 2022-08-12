@@ -40,8 +40,8 @@ def setup_platform(
     discovery_info
 ):
     """Set up the Espn sensors."""
-    espn = espn()
-    get_matches = espn.get_matches()
+    get_dados = espn()
+    get_matches = get_dados.get_matches()
 
 
     add_entities([EspnSensor(get_matches)],True)
@@ -93,7 +93,7 @@ class espn:
    
     
     def get_matches_live_event(self):
-        
+
         url = "https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/633fde36-78f6-4183-a304-99647a13eb51/pageSize/15/page/1"
 
         headers = CaseInsensitiveDict()

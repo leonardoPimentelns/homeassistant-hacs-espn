@@ -52,7 +52,7 @@ class EspnSensor(entity.Entity):
         self._attr_name = "Espn_premier_league"
         self.event = None
         self.logo = None
-        self._matches_live_event.append= []
+        self._matches_live_event= []
 
 
     @property
@@ -145,8 +145,6 @@ class EspnSensor(entity.Entity):
                         competitors.pop('leaders')
 
         for index in range(0,10): 
-            # print("{name:"+self._matches_live_event[index]['name']+"}" )
-            # print(self.matches)
             encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
             poster = self._matches_live_event[index]['poster']
             startDate = self._matches_live_event[index]['startDate']

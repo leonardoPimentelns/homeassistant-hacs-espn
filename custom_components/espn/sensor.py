@@ -59,22 +59,10 @@ class EspnSensor(entity.Entity):
         self.matches = None
         self._matches_live_event= []
 
-
-    @property
-    def extra_state_attributes(self):
-        """Return device specific state attributes."""
-        return self._attributes
-
-    @util.Throttle(UPDATE_FREQUENCY)
-    def update(self):
-        """Fetches new state data for the sensor."""
-        raise NotImplementedError
-
     @property
     def icon(self):
         """Return icon."""
         return "mdi:bank"
-
 
 
     @util.Throttle(UPDATE_FREQUENCY)
@@ -102,33 +90,10 @@ class espn:
         self.videos_event = None
         self._matches_live_event = []
         self.times = []
-        self._highlights = []
-        
    
-       
-    def get_matches_highlights(self,name):
-       
-        video_request = requests.get("https://api-app.espn.com/v1/video/soccer/"+name+"/clips?lang=pt&region=br&dates=20220729&20220807")
-        self.videos = json.loads(video_request.content)
-        self.video_url=None
-        for v in self.videos['videos']:
-            vv= v['links']['source']['HD']['href']
-            id= v['id']
-            headline =v['headline']
-            if ('gameId' not in v):
-                continue
-            elif v['gameId'] ==643182:
-                print('')
-                self._highlights.append(v['gameId'])
-                self._highlights.append(headline)
-                self._highlights.append(vv)
-
-        return  self._highlights
+    
     def get_matches_live_event(self):
-       
-       
-
-        # https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/32e8fb49-1994-4568-b596-3cb2f36b6e14/pageSize/15/page/1"
+        
         url = "https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/633fde36-78f6-4183-a304-99647a13eb51/pageSize/15/page/1"
 
         headers = CaseInsensitiveDict()

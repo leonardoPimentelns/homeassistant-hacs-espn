@@ -75,7 +75,54 @@ class EspnSensor(entity.Entity):
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
+        self.matches = self.matches
 
+
+    @property
+    def extra_state_attributes(self):
+        """Return device specific state attributes."""
+        self._attributes = {
+            "logo": self.logo ,
+            "events": self.matches,
+
+        }
+        return  self._attributes
+
+class espn:
+    def __init__(self):
+        self.result = None
+        self.videos = None
+        self.matches= []
+        self.videos_event = None
+        self._matches_live_event = []
+        self.times = []
+        self._highlights = []
+        
+   
+       
+    def get_matches_highlights(self,name):
+       
+        video_request = requests.get("https://api-app.espn.com/v1/video/soccer/"+name+"/clips?lang=pt&region=br&dates=20220729&20220807")
+        self.videos = json.loads(video_request.content)
+        self.video_url=None
+        for v in self.videos['videos']:
+            vv= v['links']['source']['HD']['href']
+            id= v['id']
+            headline =v['headline']
+            if ('gameId' not in v):
+                continue
+            elif v['gameId'] ==643182:
+                print('')
+                self._highlights.append(v['gameId'])
+                self._highlights.append(headline)
+                self._highlights.append(vv)
+
+        return  self._highlights
+    def get_matches_live_event(self):
+       
+        event=[]
+
+        # https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/32e8fb49-1994-4568-b596-3cb2f36b6e14/pageSize/15/page/1"
         url = "https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/633fde36-78f6-4183-a304-99647a13eb51/pageSize/15/page/1"
 
         headers = CaseInsensitiveDict()
@@ -104,23 +151,35 @@ class EspnSensor(entity.Entity):
             self._matches_live_event.sort(key = lambda x:(x["startDate"],(x["name"])))
 
 
+          
+        return self._matches_live_event
+           
+          
 
-        date1 = (datetime.now()- timedelta(days=2)).strftime('%Y%m%d') 
-        date2 = (datetime.now()+ timedelta(days=5)).strftime('%Y%m%d')
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates="+date1+"-"+date2+"")
+    def get_matches(self,name):
+      
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+name+"/scoreboard?dates=20220810-20220821")
         result = json.loads(request.content)
-        event= []
-        self.logo = result['leagues'][0]['logos'][0]['href']
+        year = result['leagues'][0]['season']['year']
+        name = result['leagues'][0]['name']
+        logo = result['leagues'][0]['logos'][0]['href']
+        
 
-
+        
+        
+        
+       
         for leagues in result['events'][0:10]:
-            date_z =leagues['date'].replace('Z', '+00:00')
+            date_z =leagues['date'].replace('Z', '+00:00') 
             date = datetime.fromisoformat(date_z)
             new_date = date.astimezone(pytz.timezone('America/Sao_Paulo')).strftime('%a-%m-%d %H:%M')
-
+            
             leagues['date'] = new_date
+            leagues['name'] = leagues['name'].replace("at","vs.")
             leagues.pop('links')
-            self.event.append(leagues)
+            self.matches.append(leagues)
+       
+           
 
             for competitions  in leagues['competitions']:
                 competitions.pop('situation')
@@ -135,28 +194,25 @@ class EspnSensor(entity.Entity):
                     else:
                         for athletesInvolved in details['athletesInvolved']:
                             athletesInvolved.pop('links')
-
+                            
                 for competitors in competitions['competitors']:
+                    time1 = competitions['competitors'][0]['team']['displayName'] 
+                    time2 = competitions['competitors'][1]['team']['displayName']
+                    times = f"{time1} vs. {time2}"
+                    self.times.append(times)
                     competitors['team'].pop('links')
                     if 'leaders' not in competitors:
                         continue
                     else:
                         competitors.pop('leaders')
-
+       
         for index in range(0,10): 
+            # print("{name:"+self._matches_live_event[index]['name']+"}" )
+            # print(self.matches)
             encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
             poster = self._matches_live_event[index]['poster']
             startDate = self._matches_live_event[index]['startDate']
             key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
            
             self.matches[index].update({key: value})
-
-    @property
-    def extra_state_attributes(self):
-        """Return device specific state attributes."""
-        self._attributes = {
-            "logo": self.logo ,
-            "events": self.event,
-
-        }
-        return  self._attributes
+        return  self.matches

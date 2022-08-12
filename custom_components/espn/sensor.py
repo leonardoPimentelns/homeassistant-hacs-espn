@@ -158,9 +158,9 @@ class espn:
            
           
 
-    def get_matches(self,name):
+    def get_matches(self):
       
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+name+"/scoreboard?dates=20220810-20220821")
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20220810-20220821")
         result = json.loads(request.content)
         year = result['leagues'][0]['season']['year']
         name = result['leagues'][0]['name']

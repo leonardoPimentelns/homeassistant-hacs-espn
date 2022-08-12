@@ -158,7 +158,7 @@ class espn:
                     else:
                         for athletesInvolved in details['athletesInvolved']:
                             athletesInvolved.pop('links')
-                            
+                           
                 for competitors in competitions['competitors']:
                     time1 = competitions['competitors'][0]['team']['displayName'] 
                     time2 = competitions['competitors'][1]['team']['displayName']

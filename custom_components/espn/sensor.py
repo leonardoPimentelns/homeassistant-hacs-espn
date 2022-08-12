@@ -75,7 +75,9 @@ class EspnSensor(entity.Entity):
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
-        self.matches = self.matches
+        espn = espn()
+        
+        self.matches = espn.get_matches()
 
 
     @property
@@ -120,7 +122,7 @@ class espn:
         return  self._highlights
     def get_matches_live_event(self):
        
-        event=[]
+       
 
         # https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/32e8fb49-1994-4568-b596-3cb2f36b6e14/pageSize/15/page/1"
         url = "https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/633fde36-78f6-4183-a304-99647a13eb51/pageSize/15/page/1"

@@ -119,11 +119,6 @@ class espn:
             
             self._matches_live_event.append(data)
             self._matches_live_event.sort(key = lambda x:(x["startDate"],(x["name"])))
-
-
-          
-        return self._matches_live_event
-           
           
 
     def get_matches(self):
@@ -176,12 +171,12 @@ class espn:
                     else:
                         competitors.pop('leaders')
        
-        # for index in range(0,10): 
-        #     encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
-        #     poster = self._matches_live_event[index]['poster']
-        #     startDate = self._matches_live_event[index]['startDate']
-        #     key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
+        for index in range(0,10): 
+            encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
+            poster = self._matches_live_event[index]['poster']
+            startDate = self._matches_live_event[index]['startDate']
+            key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
            
-        #     self.matches[index].update({key: value})
-        #     attributes = {"attributes": self.matches}
+            self.matches[index].update({key: value})
+            attributes = {"attributes": self.matches}
         return  self.matches

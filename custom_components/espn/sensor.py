@@ -129,10 +129,6 @@ class espn:
         name = result['leagues'][0]['name']
         logo = result['leagues'][0]['logos'][0]['href']
         
-
-        
-        
-        
        
         for leagues in result['events'][0:10]:
             date_z =leagues['date'].replace('Z', '+00:00') 
@@ -176,7 +172,6 @@ class espn:
             poster = self._matches_live_event[index]['poster']
             startDate = self._matches_live_event[index]['startDate']
             key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
-           
+         
             self.matches[index].update({key: value})
-            attributes = {"attributes": self.matches}
         return  self.matches

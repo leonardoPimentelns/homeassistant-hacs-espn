@@ -15,7 +15,7 @@ from homeassistant.helpers import config_validation
 _LOGGER = logging.getLogger(__name__)
 
 
-DEFAULT_NAME = 'Espn'
+DEFAULT_NAME = 'Espn_premier_league'
 UPDATE_FREQUENCY = timedelta(seconds=1)
 
 # PLATFORM_SCHEMA = config_validation.PLATFORM_SCHEMA.extend(
@@ -39,17 +39,17 @@ def setup_platform(
     add_entities,
     discovery_info
 ):
-    """Set up the pyNubank sensors."""
+    """Set up the Espn sensors."""
 
     add_entities([EspnSensor()],True)
 
 
 class EspnSensor(entity.Entity):
-    """Representation of a pyNubank sensor."""
+    """Representation of a Espn sensor."""
 
     def __init__(self):
-        """Initialize a new pyNubank sensor."""
-        self._attr_name = "Espn"
+        """Initialize a new Espn sensor."""
+        self._attr_name = "Espn_premier_league"
         self.event = None
         self.logo = None
 
@@ -70,10 +70,6 @@ class EspnSensor(entity.Entity):
         return "mdi:bank"
 
 
-    @property
-    def _name_suffix(self):
-        """Returns the name suffix of the sensor."""
-        return 'FATURA'
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):

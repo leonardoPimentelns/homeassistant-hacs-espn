@@ -176,14 +176,12 @@ class espn:
                     else:
                         competitors.pop('leaders')
        
-        for index in range(0,10): 
-            # print("{name:"+self._matches_live_event[index]['name']+"}" )
-            # print(self.matches)
-            encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
-            poster = self._matches_live_event[index]['poster']
-            startDate = self._matches_live_event[index]['startDate']
-            key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
+        # for index in range(0,10): 
+        #     encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
+        #     poster = self._matches_live_event[index]['poster']
+        #     startDate = self._matches_live_event[index]['startDate']
+        #     key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
            
-            self.matches[index].update({key: value})
-            attributes = {"attributes": self.matches}
-        return  attributes
+        #     self.matches[index].update({key: value})
+        #     attributes = {"attributes": self.matches}
+        return  self.matches

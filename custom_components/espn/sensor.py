@@ -57,7 +57,6 @@ class EspnSensor(entity.Entity):
         self.event = None
         self.logo = None
         self.matches = None
-        self._matches_live_event= []
 
     @property
     def icon(self):

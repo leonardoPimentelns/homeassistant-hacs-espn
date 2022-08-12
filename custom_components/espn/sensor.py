@@ -40,16 +40,19 @@ def setup_platform(
     discovery_info
 ):
     """Set up the Espn sensors."""
+    espn = espn.get_matches()
 
-    add_entities([EspnSensor()],True)
+
+    add_entities([EspnSensor(espn)],True)
 
 
 class EspnSensor(entity.Entity):
     """Representation of a Espn sensor."""
 
-    def __init__(self):
+    def __init__(self,espn):
         """Initialize a new Espn sensor."""
         self._attr_name = "Espn_premier_league"
+        self.espn = espn
         self.event = None
         self.logo = None
         self.matches = None
@@ -75,9 +78,9 @@ class EspnSensor(entity.Entity):
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
-        espn = espn()
         
-        self.matches = espn.get_matches()
+        
+        self.matches = self.espn
 
 
     @property
@@ -217,4 +220,5 @@ class espn:
             key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
            
             self.matches[index].update({key: value})
-        return  self.matches
+            attributes = {"attributes": self.matches}
+        return  attributes

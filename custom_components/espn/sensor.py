@@ -40,19 +40,20 @@ def setup_platform(
     discovery_info
 ):
     """Set up the Espn sensors."""
-    espn = espn.get_matches()
+    espn = espn()
+    get_matches = espn.get_matches()
 
 
-    add_entities([EspnSensor(espn)],True)
+    add_entities([EspnSensor(get_matches)],True)
 
 
 class EspnSensor(entity.Entity):
     """Representation of a Espn sensor."""
 
-    def __init__(self,espn):
+    def __init__(self,get_matches):
         """Initialize a new Espn sensor."""
         self._attr_name = "Espn_premier_league"
-        self.espn = espn
+        self.get_matches = get_matches
         self.event = None
         self.logo = None
         self.matches = None
@@ -80,7 +81,7 @@ class EspnSensor(entity.Entity):
     def update(self):
         
         
-        self.matches = self.espn
+        self.matches = self.get_matches
 
 
     @property

@@ -42,25 +42,22 @@ def setup_platform(
 ):
     """Set up the Espn sensors."""
     get_dados = espn()
-    get_matches_live_event = get_dados.get_matches_live_event()
-    get_matches = get_dados.get_matches()
-   
 
-
-    add_entities([EspnSensor(get_matches,get_matches_live_event)],True)
+    add_entities([EspnSensor(get_dados)],True)
 
 
 class EspnSensor(entity.Entity):
     """Representation of a Espn sensor."""
 
-    def __init__(self,get_matches,get_matches_live_event):
+    def __init__(self,get_dados):
         """Initialize a new Espn sensor."""
         self._attr_name = "Espn_premier_league"
-        self.get_matches_live_event = get_matches_live_event
-        self.get_matches = get_matches
+        self.get_dados= get_dados
         self.event = None
         self.logo = None
         self.matches = None
+        self.live = None
+
 
     @property
     def icon(self):
@@ -70,9 +67,9 @@ class EspnSensor(entity.Entity):
 
     @util.Throttle(UPDATE_FREQUENCY)
     def update(self):
-        
-        self.get_matches_live_event = self.get_matches_live_event
-        self.matches = self.get_matches
+        self.live = self.get_dados.get_matches_live_event()
+        matches = self.get_dados.get_matches()
+        self.matches = matches
 
 
     @property
@@ -80,6 +77,7 @@ class EspnSensor(entity.Entity):
         """Return device specific state attributes."""
         self._attributes = {
             "logo": self.logo ,
+            "Live_events": self.live,
             "events": self.matches,
 
         }
@@ -126,8 +124,11 @@ class espn:
           
 
     def get_matches(self):
-      
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates=20220810-20220821")
+        start = datetime.today() - timedelta(days=2)
+        start = start.strftime('%Y%m%d') 
+        end =  datetime.today()  + timedelta(days=5)
+        end = end.strftime('%Y%m%d')
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates="+start+"-"+end+"")
         result = json.loads(request.content)
         year = result['leagues'][0]['season']['year']
         name = result['leagues'][0]['name']
@@ -171,11 +172,4 @@ class espn:
                     else:
                         competitors.pop('leaders')
        
-        for index in range(0,10): 
-            encodedFamilyId = self._matches_live_event[index]['encodedFamilyId']
-            poster = self._matches_live_event[index]['poster']
-            startDate = self._matches_live_event[index]['startDate']
-            key, value = 'live_event',{"encodedFamilyId":encodedFamilyId,"poster":poster,"startDate": startDate}
-           
-            self.matches[index].update({key: value})
         return  self.matches

@@ -109,18 +109,23 @@ class espn:
       
 
         for items in data['items'][0:10]:
-            name = items['text']['title']['full']['program']['default']['content']
-            encodedFamilyId =items['family']['encodedFamilyId']
-            poster = items['image']['tile']['1.78']['program']['default']['url']
-            date_z =items['startDate'].replace('Z', '+00:00') 
-            date = datetime.fromisoformat(date_z)
-            new_date = date.astimezone(pytz.timezone('America/Sao_Paulo')).strftime('%Y-%m-%d %H:%M')
-            startDate = new_date
+            today = datetime.today().strftime('%Y-%m-%d')
+            matches_today = items['startDate'].replace('Z', '+00:00')
+            matches_today = datetime.fromisoformat(matches_today).strftime('%Y-%m-%d')
+            if matches_today == today :  
+                name = items['text']['title']['full']['program']['default']['content']
+                encodedFamilyId =items['family']['encodedFamilyId']
+                poster = items['image']['tile']['1.78']['program']['default']['url']
+                date_z =items['startDate'].replace('Z', '+00:00') 
+                date = datetime.fromisoformat(date_z)
+                new_date = date.astimezone(pytz.timezone('America/Sao_Paulo')).strftime('%Y-%m-%d %H:%M')
+                startDate = new_date
 
-            data = {"name": name,"encodedFamilyId":encodedFamilyId,"poster": poster,"startDate":startDate}
-            
-            self._matches_live_event.append(data)
-            self._matches_live_event.sort(key = lambda x:(x["startDate"],(x["name"])))
+                data = {"name": name,"encodedFamilyId":encodedFamilyId,"poster": poster,"startDate":startDate}
+                
+                self._matches_live_event.append(data)
+                self._matches_live_event.sort(key = lambda x:(x["startDate"],(x["name"])))
+        return self._matches_live_event
           
 
     def get_matches(self):

@@ -55,7 +55,7 @@ class EspnSensor(entity.Entity):
     def update(self):
         self.live = self.get_dados.get_matches_live_event()
     
-        self.matches = self.get_dados.get_matches()
+        self.matches = self.get_dados.get_matches(league)
 
 
     @property

@@ -41,6 +41,7 @@ class EspnSensor(entity.Entity):
         self.event = None
         self.logo = None
         self.matches= []
+        self.times = []
         self.live = None
 
 

@@ -40,7 +40,7 @@ class EspnSensor(entity.Entity):
         self._attr_name = "Espn_premier_league"
         self.event = None
         self.logo = None
-        self.matches = None
+        self.matches= []
         self.live = None
 
 

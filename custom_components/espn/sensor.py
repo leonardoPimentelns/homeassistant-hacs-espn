@@ -57,10 +57,13 @@ class EspnSensor(entity.Entity):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
-        self.get_espn.update()
-        self.matches = self.get_espn.matches
+        self.espn.update()
+        self.matches = self.espn.matches
+        self.times = self.espn.times
+        self.live = self.espn.live
+        self.logo = self.espn.logo
+        self.event = self.espn.event
         self.update_ha_state()
-
             
        
         

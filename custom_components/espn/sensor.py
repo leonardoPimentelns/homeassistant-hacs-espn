@@ -28,18 +28,18 @@ def setup_platform(
 ):
     """Set up the Espn sensors."""
    
-    espn = espn()
-    add_entities([EspnSensor(espn)],True)
+    get_espn = espn()
+    add_entities([EspnSensor(get_espn)],True)
 
 
 class EspnSensor(entity.Entity):
     """Representation of a Espn sensor."""
 
-    def __init__(self,espn):
+    def __init__(self,get_espn):
         """Initialize a new Espn sensor."""
         self._attr_name = "Espn_premier_league"
         self.event = None
-        self.espn = espn
+        self.espn = get_espn
         self.logo = None
         self.matches= []
         self.times = []
@@ -57,10 +57,10 @@ class EspnSensor(entity.Entity):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
-        self.espn.update()
-        self.matches = self.espn.matches
+        self.get_espn.update()
+        self.matches = self.get_espn.matches
         self.update_ha_state()
-        
+
             
        
         

@@ -27,18 +27,17 @@ def setup_platform(
     discovery_info
 ):
     """Set up the Espn sensors."""
-    get_dados = espn()
+   
 
-    add_entities([EspnSensor(get_dados)],True)
+    add_entities([EspnSensor()],True)
 
 
 class EspnSensor(entity.Entity):
     """Representation of a Espn sensor."""
 
-    def __init__(self,get_dados):
+    def __init__(self):
         """Initialize a new Espn sensor."""
         self._attr_name = "Espn_premier_league"
-        self.get_dados= get_dados
         self.event = None
         self.logo = None
         self.matches = None
@@ -57,7 +56,7 @@ class EspnSensor(entity.Entity):
         start = start.strftime('%Y%m%d') 
         end =  datetime.today()  + timedelta(days=5)
         end = end.strftime('%Y%m%d')
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+name+"/scoreboard?dates="+start+"-"+end+"")
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates="+start+"-"+end+"")
         result = json.loads(request.content)
         year = result['leagues'][0]['season']['year']
         name = result['leagues'][0]['name']
@@ -101,8 +100,8 @@ class EspnSensor(entity.Entity):
                     else:
                         competitors.pop('leaders')
                         
-        self.live = self.get_dados.get_matches_live_event()
-        self.matches = self.get_dados.get_matches(league)
+       
+        
 
 
     @property

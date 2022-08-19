@@ -28,7 +28,7 @@ def setup_platform(
 ):
     """Set up the Espn sensors."""
    
-
+ 
     add_entities([EspnSensor()],True)
 
 

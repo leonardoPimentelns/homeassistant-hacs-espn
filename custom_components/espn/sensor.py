@@ -57,16 +57,10 @@ class EspnSensor(entity.Entity):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
-        self.espn.update()
-        self.matches = self.espn.matches
-        self.times = self.espn.times
-        self.live = self.espn.live
-        self.logo = self.espn.logo
-        self.event = self.espn.event
-        self.update_ha_state()
-            
-       
         
+        self.matches = self.espn.get_matches(league)
+        
+            
 
 
     @property
@@ -80,7 +74,7 @@ class EspnSensor(entity.Entity):
         }
         return  self._attributes
 
-class espn:
+class espn():
     def __init__(self):
         self.result = None
         self.videos = None
@@ -92,59 +86,7 @@ class espn:
         
 
 
-    def get_matches_highlights(self,name):
-       
-        video_request = requests.get("https://api-app.espn.com/v1/video/soccer/"+league+"/clips?lang=pt&region=br&dates=20220729&20220807")
-        self.videos = json.loads(video_request.content)
-        self.video_url=None
-        for v in self.videos['videos']:
-            vv= v['links']['source']['HD']['href']
-            id= v['id']
-            headline =v['headline']
-            if ('gameId' not in v):
-                continue
-            elif v['gameId'] ==643182:
-                print('')
-                self._highlights.append(v['gameId'])
-                self._highlights.append(headline)
-                self._highlights.append(vv)
-
-    def get_matches_live_event(self):
-       
-        event=[]
-
-        # https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/32e8fb49-1994-4568-b596-3cb2f36b6e14/pageSize/15/page/1"
-        url = "https://star.content.edge.bamgrid.com/svc/content/CuratedSet/version/5.1/region/BR/audience/k-false,l-true/maturity/1850/language/en/setId/633fde36-78f6-4183-a304-99647a13eb51/pageSize/15/page/1"
-
-        headers = CaseInsensitiveDict()
-        headers["Accept"] = "application/json"
-        headers["Authorization"] = "Bearer eyJ6aXAiOiJERUYiLCJraWQiOiJRVmxCQXpUeFUzMVRtNWVfZTIzams0dFpwRWJpRERteWp6MDNsSS1hRVVBIiwiY3R5IjoiSldUIiwiZW5jIjoiQzIwUCIsImFsZyI6ImRpciJ9..Ynhc5FHxOEgzvdEp.60DAguKWzuqMt5x3sqeDOwq7NfCEx0EsjnXymj26X3Mq-pUCEgC3Kp_hQySehZrQkz_hDzK_GsjsqMJJwmQgNGr0L9mFP5-SqA-1mW59jm1RXj0lnbxmf8o6MRm9CpU-envofgHtiqN8rpu_4F4Vj0sMF3Efzszxk0VIee70xN_d97GyUR5p1UT4yNedJj5BJmtaCJilJnYDBEVe4lUl6IqalnktIOFqyme2eWx1UPRIB2Jm1vzNgrj_bGI6RD74qp3pdaCoHNsPNftmFIMPOIfHVOGMk-F79Xwg4INQCmc3_URn6b_QfMUwwXy2kb7NOIBi7NC_gw2CMLEQMt5al18SpeYe6VurBUO8tl6PzwBdGf3qB0WbHi-mq5r3gHED9v4DBQJtx269MhnMMyCVIVrafeLaRZUASi2vgpU41y9rU1x-xWwRqrZ0tb1yqagKMZe0Z_nzKV_iVJc9aOjMQ6n4nrHyg_HNoXu-o3GuUzmna0KltTMOKxYVice_56CZOyMypaZ3cbOILYPQWD4nk6r6p9ziIbIlOa4IXVxZlRLqsuUXFbIBGq5-Oe_ll_xn0u1ULL-OXBe8M3pD_w7TSdcc0ZHDymAVabFnSJaQ0nrWx_RvRZQ94hpGUdKG1gSP-Lwg5fQb3pzZMuVQyyGZCAXKysI53lG1aOVWw6jLFRWFWYt3TSK00t2DGJg3Q-ZxI4X7RGcYvFRJOZm5jN8ELH4BPTTsd0q6bE9RMsFjsujA4at4NRYEd5ayk6Zn0bOKogpPubtj5_tMBvY1oyT7mmgC4CoHuE7wwhJH1lheMe6ewPzA0-WPDvsH1e4sjPuXconOr0ggk76Qp_Uk1ttzCxom0VTA6WA0tcu7ULiIZIKfeXSbAy76Jv_CTxCi9o_Rh0C021iZEWByQBybvOnVeqaxgITyS9wGejAE7uK-NQpuzMpHSeRELMKBQhO_XCAx1zbUxZch81xsPShDTYWaLRR6WcBdDPiPiJakzyMdhmuZ49ODUlrkf_TmKpxM8752QpFDF6mNa-dkJkWueMV2jJgIwwR3vSR_2Rjxt4KytpPNje4UkG88pT8sMovAorBFRRf7veCvr2q0eLBiOicIDGt1KvRNBVAQzLzJn9cx6pEqSHNTlkSJqKD9F_1YzBBShfowX2MEE1ggl-WaT4H2cUTfAzLv0eqHvLvNgIkqDDm9Ls9pTVUDIufAR6zhbn8L0JNpnk159dedZtfYLfNU_ZG82aAJJQfN_DTsh8RUHIwXk2BBwIA5YIy9lPZuwJAf-sylnWRjwdUzW8LD4y77xH1EGaFuR2l_a4jKjwibHMQ0lq3IhEoMn7YFEc4AisYcpztTay2B4sTt1YOmdxTEQmDQ3dvYvuKDqdvSZCObuJ-suIpJgpLJZYrFWoqniZUFsMsG3s2rEZ-B54RbKzPdH870CsQP7wzgO5oZD_NUDmV0y3hzlUH-V7pKH3YNMa5jKnDqESIxcgdjvk-5y7SAae8_MnJLkDJhtUWDthFHgBeq_bftmcv6CU0gGiQiXkcobVKGN6XApRk2j7QQQ00y3QYrB1ei5RGZJjKHrD2rKQrAaG8AaQND9g-RNYW5SpVTlmwc8Ncutc6bMT3qIM3NUrEQdFdH6r6EqE8VWJlJ_TX2r1lfd-YkvXRMgGZzp31t7z7WAFXMkkXVdZ2ePKb2uLV52AVmp7yJNy3nVRAi8X2hKZRgptkPm3czT7YN14QrGfGw434U2XkMPL6NjQtGJY03IvwVYNXYmeNov45sk9clxAb6ZewP3BkPn7_ZSDjd3UdcnVA8XSKRR3-M8JnU37gB4DcekLifJo4G7IXj4ibhAO-AAyW7RRU4yNBaQil3iLv-c4w4bZ1BroeBHV6oy6gfu7t6FxBAp0ax52JDV2fsoQkhVFUx5ZzA1D7GJ08iYE0DCWfjSybJqCKRyNa6wVFVq768iFz2FkS4I_gZJbxUiguLQPubNoUHhno_3aw_Dy8xX36oEM5hcfAHhn9XfEjWcicqFY5MBXAiPvEep-XtMBT3TIL6su7msDguM-esEl5YSZyKq-z3gxpwpJVsxWO1tDcz_F4KuCAfz_oqXZV9nm79me-vmbcsI1PAyiLSpTMvMXDJwkyeIFotNpzNZHHYOkHYqyqlELcBBVBy5GSGW2XIIygGzSQNd_5WO1KAIoCmQbqDvW_ePng61lS6MYFMIhRZEgvjBNnDj3fBwAvZcH41ipQljqrxOvoh2kHo0v-J4m05Wl1p2x2gGEZpUK5HjZIC32JfA5rcLrp_84KrujbXojgleOszXxC3PP1iRIQwpeewS5yk0r0iEgsnrF7B7ug_f96lzFIsfoH0CinCCCxi_d1haZ59_c6Nb5gQOnWoLzr4qWoxRLm9x90_UHlRjmux5UAE3QT28RkxAqhwcq2yNQkC1nSG9wDgIZ8vbsaiKIZetPjWg2wmck0vpDjvMoTAUXkdCttKSqrqcDnDFfB30PqKhpouesb5t44t4YQenafdAtNkGz62XIfuGnRH0iv3h1-eADyMDhoM78bgMe6bwV1hcCTeuIEk_nXhn22paM50Ssp4t6z11pszBiG_EynNsrQzzyWcwY8pr2JD3LE9fJWX7dR1Qyx66J8-THxfibOokgqEZHWUtGwhP69q-h9iMZq17PMhmbXLqC1_uTgxBn06dA6jieDDdeeiM7Nl9Na5_pSsWpn5ajgVYzWrH6ZKjoMsvw.Ih8Xbama0Odjgs3F8x8ORw"
-
-        resp = requests.get(url, headers=headers)
-        data  = resp.content
-        data = json.loads(data)
-        data = data['data']['CuratedSet']
-      
-
-        for items in data['items'][0:10]:
-            today = datetime.today().strftime('%Y-%m-%d')
-            matches_today = items['startDate'].replace('Z', '+00:00')
-            matches_today = datetime.fromisoformat(matches_today).strftime('%Y-%m-%d')
-            if matches_today == today :  
-
-                name = items['text']['title']['full']['program']['default']['content']
-                encodedFamilyId =items['family']['encodedFamilyId']
-                poster = items['image']['tile']['1.78']['program']['default']['url']
-                date_z =items['startDate'].replace('Z', '+00:00') 
-                date = datetime.fromisoformat(date_z)
-                new_date = date.astimezone(pytz.timezone('America/Sao_Paulo')).strftime('%Y-%m-%d %H:%M')
-                startDate = new_date
-
-                data = {"event":{"name": name,"encodedFamilyId":encodedFamilyId,"poster": poster,"startDate":startDate}}
-                self._matches_live_event.append(data)
-                self._matches_live_event.sort(key = lambda x:(x['event']["startDate"],x['event']["name"]))
-                data = json.dumps(event,indent=4)
-       
+    
 
     
     def get_matches(self,name):
@@ -158,45 +100,5 @@ class espn:
         name = result['leagues'][0]['name']
         logo = result['leagues'][0]['logos'][0]['href']
        
-    
-        for leagues in result['events'][0:10]:
-            date_z =leagues['date'].replace('Z', '+00:00') 
-            date = datetime.fromisoformat(date_z)
-            new_date = date.astimezone(pytz.timezone('America/Sao_Paulo')).strftime('%a-%m-%d %H:%M')
-            
-            leagues['date'] = new_date
-            leagues['name'] = leagues['name'].replace("at","vs.")
-            leagues.pop('links')
-            self.matches.append(leagues)
-       
-           
 
-            for competitions  in leagues['competitions']:
-                competitions.pop('situation')
-                if 'odds' not in competitions:
-                    break
-                else:
-                    competitions.pop('odds')
-
-                for details in competitions['details']:
-                    if 'athletesInvolved' not in details:
-                        break
-                    else:
-                        for athletesInvolved in details['athletesInvolved']:
-                            athletesInvolved.pop('links')
-                            
-                for competitors in competitions['competitors']:
-                    time1 = competitions['competitors'][0]['team']['displayName'] 
-                    time2 = competitions['competitors'][1]['team']['displayName']
-                    times = f"{time1} vs. {time2}"
-                    self.times.append(times)
-                    competitors['team'].pop('links')
-                    if 'leaders' not in competitors:
-                        break
-                    else:
-                        competitors.pop('leaders')
-
-           
-           
-                
-        return self.matches
+        return result

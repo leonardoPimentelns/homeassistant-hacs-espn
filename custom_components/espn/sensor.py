@@ -12,14 +12,23 @@ from homeassistant import const
 from homeassistant.helpers import entity
 from homeassistant import util
 from homeassistant.helpers import config_validation
-
+from homeassistant.components.sensor import PLATFORM_SCHEMA
+import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
 _LOGGER = logging.getLogger(__name__)
 
 
-DEFAULT_NAME = 'Espn_premier_league'
+NAME = 'name'
 UPDATE_FREQUENCY = timedelta(seconds=1)
-league ='eng.1'
+LEAGUE ='league'
 
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
+    {
+        vol.Required(LEAGUE): cv.string,
+        vol.Required(NAME): cv.string,
+        
+    }
+)
 def setup_platform(
     hass,
     config,
@@ -29,27 +38,29 @@ def setup_platform(
     """Set up the Espn sensors."""
    
     get_espn = espn()
-    add_entities([EspnSensor(get_espn)],True)
+    add_entities([EspnSensor(get_espn,config)],True)
 
 
 class EspnSensor(entity.Entity):
     """Representation of a Espn sensor."""
 
-    def __init__(self,get_espn):
+    def __init__(self,get_espn,config):
         """Initialize a new Espn sensor."""
-        self._attr_name = "Espn_premier_league"
+        self.config = config
+        self._attr_name = self.config[NAME]
         self.event = None
         self.espn = get_espn
         self.logo = None
         self.matches= []
         self.times = []
         self.live = None
+        
 
 
     @property
     def icon(self):
         """Return icon."""
-        return "mdi:bank"
+        return "mdi:soccer"
 
 
     @util.Throttle(UPDATE_FREQUENCY)
@@ -58,7 +69,7 @@ class EspnSensor(entity.Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         
-        self.matches = self.espn.get_matches(league)
+        self.matches = self.espn.get_matches(self.config[LEAGUE])
         
             
 
@@ -89,12 +100,12 @@ class espn():
     
 
     
-    def get_matches(self,name):
-        start = datetime.today() - timedelta(days=2)
+    def get_matches(self,config):
+        start = datetime.today() - timedelta(days=1)
         start = start.strftime('%Y%m%d') 
-        end =  datetime.today()  + timedelta(days=5)
+        end =  datetime.today()  + timedelta(days=1)
         end = end.strftime('%Y%m%d')
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+name+"/scoreboard?dates="+start+"-"+end+"")
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+config+"/scoreboard?dates="+start+"-"+end+"")
         result = json.loads(request.content)
         year = result['leagues'][0]['season']['year']
         name = result['leagues'][0]['name']

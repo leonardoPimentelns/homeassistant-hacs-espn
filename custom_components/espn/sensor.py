@@ -105,7 +105,7 @@ class espn():
         start = start.strftime('%Y%m%d') 
         end =  datetime.today()  + timedelta(days=0)
         end = end.strftime('%Y%m%d')
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+config+"/scoreboard?dates="+start+"-"+end+"")
+        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+config+"/scoreboard?dates="+datetime.today()+"-"+datetime.today()+"")
         result = json.loads(request.content)
         year = result['leagues'][0]['season']['year']
         name = result['leagues'][0]['name']

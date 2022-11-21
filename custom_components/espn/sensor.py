@@ -103,7 +103,7 @@ class espn():
     def get_matches(self,config):
         start = datetime.today() - timedelta(days=1)
         start = start.strftime('%Y%m%d') 
-        end =  datetime.today()  + timedelta(days=1)
+        end =  datetime.today()  + timedelta(days=0)
         end = end.strftime('%Y%m%d')
         request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+config+"/scoreboard?dates="+start+"-"+end+"")
         result = json.loads(request.content)

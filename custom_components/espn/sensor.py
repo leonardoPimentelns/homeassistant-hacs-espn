@@ -85,31 +85,60 @@ class EspnSensor(entity.Entity):
         }
         return  self._attributes
 
-class espn():
-    def __init__(self):
-        self.result = None
-        self.videos = None
-        self.matches= []
-        self.videos_event = None
-        self._matches_live_event = []
-        self.times = []
-        self._highlights = []
-        
 
+def get_matches(championship):
+    data_atual = datetime.now()
+    inicio = data_atual - timedelta(days=2)
+    fim = data_atual + timedelta(days=2) 
 
-    
+    inicio =inicio.strftime("%Y%m%d")
+    fim =  fim.strftime("%Y%m%d")
 
-    
-    def get_matches(self,config):
-        start = datetime.today() - timedelta(days=1)
-        start = start.strftime('%Y%m%d') 
-        end =  datetime.today()  + timedelta(days=0)
-        end = end.strftime('%Y%m%d')
-        request = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+config+"/scoreboard?dates="+start+"-"+end+"")
-        result = json.loads(request.content)
-        year = result['leagues'][0]['season']['year']
-        name = result['leagues'][0]['name']
-        logo = result['leagues'][0]['logos'][0]['href']
-       
+    # Fazer solicitação à URL da API ESPN
+    response = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/"+championship+"/scoreboard?dates="+inicio +"-"+fim )
 
-        return result
+    # Verificar se a solicitação foi bem-sucedida
+    if response.status_code == 200:
+        # Carregar JSON em um objeto Python
+        data = json.loads(response.content)
+        goal_data = []
+
+        # Extrair informações de jogos
+        for event in data["events"]:
+            date = event["date"]
+            utc_time = datetime.fromisoformat(date.replace('Z', '+00:00')).replace(tzinfo=timezone.utc)
+            local_timezone = pytz.timezone('America/Sao_Paulo')  # substitua pelo seu fuso horário
+            local_time = utc_time.astimezone(local_timezone)
+            date = local_time.strftime('%A %d at %H:%M')
+
+            team_home = event["competitions"][0]["competitors"][0]["team"]["name"]
+            venue = event["competitions"][0]["venue"]["fullName"]
+
+            team_home_score = event["competitions"][0]["competitors"][0]["score"]
+            team_home_logo = event["competitions"][0]["competitors"][0]['team']["logo"]
+            team_home_color = event["competitions"][0]["competitors"][0]['team']["color"]
+
+            team_visiting = event["competitions"][0]["competitors"][1]["team"]["name"]
+            team_visiting_logo = event["competitions"][0]["competitors"][1]['team']["logo"]
+            team_visiting_color = event["competitions"][0]["competitors"][1]['team']["color"]
+            team_visiting_score = event["competitions"][0]["competitors"][1]["score"]
+
+            displayClock = event['competitions'][0]['status']['displayClock']
+            completed = event['competitions'][0]['status']['type']['completed']
+            description = event['competitions'][0]['status']['type']['description']
+            goal_data ={
+                "date": date,
+                "displayClock":displayClock,
+                "completed": completed,
+                "description":description,
+                "venue":venue,
+                "team_home": team_home,
+                "team_home_logo":team_home_logo,
+                "team_home_color":team_home_color,
+                "team_home_score": team_home_score,
+                "team_visiting": team_visiting,
+                "team_visiting_logo":team_visiting_logo,
+                "team_visiting_color":team_visiting_color,
+                "team_visiting_score": team_visiting_score
+            }
+            return goal_data
